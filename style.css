@@ -1,0 +1,83 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+html,
+body {
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    position: relative;
+}
+#screen {
+    position: relative;
+
+    left: 50%;
+    top: 2.5%;
+    transform: translate(-50%, -0%);
+    width: 90%;
+    height: 70%;
+    background-color: white;
+}
+#buttons {
+    top: 5%;
+    left: 5%;
+    position: relative;
+    background-color:;
+    width: 90%;
+    height: 20%;
+}
+button {
+    position: absolute;
+    width: 100px;
+    height: 40px;
+    background-color: #436fe2;
+    font-size: 16px;
+}
+#up {
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#down {
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#left {
+    top: 50%;
+    left: 25%;
+    transform: translate(-50%, -50%);
+}
+#right {
+    top: 50%;
+    left: 75%;
+    transform: translate(-50%, -50%);
+}
+#head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translatex(50px);
+    transform: translate(0%, 0%);
+    width: 20px;
+    height: 20px;
+    background-color: #43e266;
+}
+.food {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 0px;
+    left: 0px;
+    width: 20px;
+    height: 20px;
+    background-color: #e27343;
+}
+.body {
+    position: absolute;
+    transform: translate(0%, 0%);
+
+    width: 20px;
+    height: 20px;
+    background-color: #43e266;
+}
