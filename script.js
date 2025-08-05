@@ -1,41 +1,58 @@
 console.log("running");
 let screen = document.getElementById("screen");
-let head = document.getElementById("head");
 let w = screen.offsetWidth;
 let h = screen.offsetHeight;
-let y = parseInt(head.style.top) || 10;
-let x = parseInt(head.style.left) || 10;
+let ratio = window.devicePixelRatio || 1;
+screen.width = w * ratio;
+screen.height = h * ratio;
+screen.style.width = w + "px";
+screen.style.height = h + "px";
+screen.style.backgroundColor = "lightgrey";
+let headsize = 20;
+let foodsize = 20;
+let speed = 10;
 let count = 2;
-let ix = 0;
-let iy = 0;
-let pathx = [];
-let pathy = [];
-let bodies = [];
+let x = 0;
+let y = 0;
+let pathx = [0];
+let pathy = [0];
 let foodx = "";
 let foody = "";
-let food = "";
 let lastframe = 0;
-speed = 5;
+let ctx = screen.getContext("2d");
+ctx.scale(ratio, ratio);
 let dir = "right";
+
 genfood();
 
 function run(ctime) {
     window.requestAnimationFrame(run);
-    if ((ctime - lastframe) / 1000 < 1 / speed) {
-        return;
-    }
+
+    let deltaTime = (ctime - lastframe) / 1000; // in seconds
+    lastframe = ctime;
+
+    update(deltaTime);
+}
+function update(deltaTime) {
+    let velocity = 80;
+
+    let moveAmount = velocity * deltaTime;
+
     if (dir == "up" && y > 0) {
-        y--;
-    } else if (dir == "down" && y < h) {
-        y++;
+        y -= moveAmount;
+    } else if (dir == "down" && y < h - headsize) {
+        y += moveAmount;
     } else if (dir == "left" && x > 0) {
-        x--;
-    } else if (dir == "right" && x < w) {
-        x++;
+        x -= moveAmount;
+    } else if (dir == "right" && x < w - headsize) {
+        x += moveAmount;
     }
+
     position();
 }
+console.log(pathx);
 window.requestAnimationFrame(run);
+
 function up() {
     if (dir !== "down") dir = "up";
 }
@@ -50,93 +67,31 @@ function right() {
 }
 
 function position() {
-    head.style.top = `${y}px`;
-    head.style.left = `${x}px`;
-    pathx.push(x);
+    pathx.unshift(x);
+    pathy.unshift(y);
     if (pathx.length > count) {
-        pathx.splice(0, pathx.length - count);
+        pathx.pop();
     }
-    pathy.push(y);
     if (pathy.length > count) {
-        pathy.splice(0, pathy.length - count);
+        pathy.pop();
     }
-    move();
-    colide();
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#e27343";
+    ctx.fillRect(foodx, foody, foodsize, foodsize);
+    ctx.fillStyle = "#43e268";
+    ctx.fillRect(pathx[0], pathy[0], headsize, headsize);
+    for (let i = 1; i < count; i++) {
+        ctx.fillRect(pathx[i], pathy[i], headsize, headsize);
+    }
+    let distance = Math.sqrt((pathx[0] - foodx) ** 2 + (pathy[0] - foody) ** 2);
+    if (distance < 20) {
+        genfood();
+        count += 6;
+    }
 }
 function genfood() {
-    let r1 = w - 20;
-    let r2 = h - 20;
+    let r1 = w - foodsize;
+    let r2 = h - foodsize;
     foodx = Math.floor(Math.random() * r1);
     foody = Math.floor(Math.random() * r2);
-    food = document.createElement("div");
-    screen.appendChild(food);
-    food.classList.add("food");
-    food.style.transform = `translate(${foodx}px,${foody}px)`;
-}
-function eat() {
-    screen.removeChild(food);
-    genfood();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-    grow();
-}
-function colide() {
-    const headSize = 15;
-    const foodSize = 15;
-
-    const headLeft = x;
-    const headRight = x + headSize;
-    const headTop = y;
-    const headBottom = y + headSize;
-
-    const foodLeft = foodx;
-    const foodRight = foodx + foodSize;
-    const foodTop = foody;
-    const foodBottom = foody + foodSize;
-
-    const isOverlap =
-        headLeft < foodRight &&
-        headRight > foodLeft &&
-        headTop < foodBottom &&
-        headBottom > foodTop;
-
-    if (isOverlap) {
-        console.log("eat");
-        eat();
-        iy += 1;
-        ix += 1;
-    }
-}
-function grow() {
-    count++;
-    let body = document.createElement("div");
-    screen.appendChild(body);
-    body.classList.add("body");
-    bodies.push(body);
-}
-function move() {
-    for (let i = 0; i < bodies.length; i++) {
-        let px = pathx[pathx.length - (i + 1)];
-        let py = pathy[pathy.length - (i + 1)];
-        if (px !== undefined && py !== undefined) {
-            bodies[i].style.transform = `translate(${px}px,${py}px)`;
-        }
-    }
 }
